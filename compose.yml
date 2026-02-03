@@ -1,0 +1,39 @@
+# craindo o compose para a aplicação
+# kubedev.
+#criando o serviço postgre
+services:
+  postgre:
+    image: postgres:12.17
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: Pg123
+      POSTGRES_USER: kubenews
+      POSTGRES_DB: kubenews
+    volumes:
+      - postgre_docker_vol:/var/lib/postgresql/data
+    networks:
+      - kubenews_net  
+#criando o serviço kubenews
+  kubenews:
+    image: kubedevio/kube-news:v1
+    ports:
+      - 8080:8080
+    environment:
+      DB_PASSWORD: Pg123
+      DB_USERNAME: kubenews
+      DB_DATABASE: kubenews
+      DB_HOST: postgre
+    networks:
+      - kubenews_net
+    depends_on:
+      - postgre
+
+#criando o volume gerenciado
+volumes:
+  postgre_docker_vol:     
+    name: postgre_exemplo_vol 
+
+networks:
+  kubenews_net:
+    driver: bridge
